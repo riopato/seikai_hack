@@ -5,10 +5,10 @@ An AI-powered application that helps students with last-minute exam preparation 
 ## ✨ Features
 
 - **📸 Multi-Format Text Extraction**: 
-  - Handwritten work via Mathpix OCR
+  - Handwritten work via Gemini API
   - PDF documents via PyPDF2
   - Multiple image formats (PNG, JPG, GIF, BMP, WebP, TIFF)
-- **🧠 AI Analysis**: GPT-4 analyzes correctness and provides detailed feedback
+- **🧠 AI Analysis**: gpt-oss-20b analyzes correctness and provides detailed feedback
 - **🎯 Dynamic Priority Queue**: Automatically prioritizes topics based on performance
 - **📚 Course Material Integration**: Upload textbooks, slides, homework, and past exams
 - **⚡ Urgent-Focused Interface**: Simple, fast interface for last-minute studying
@@ -21,7 +21,7 @@ An AI-powered application that helps students with last-minute exam preparation 
 
 - Python 3.8+
 - OpenAI API key
-- Mathpix API credentials
+- Gemini API key
 
 ### Installation
 
@@ -56,13 +56,12 @@ An AI-powered application that helps students with last-minute exam preparation 
 - Get your API key from [OpenAI Platform](https://platform.openai.com/)
 - Add to `.env`: `OPENAI_API_KEY=your_key_here`
 
-### Mathpix API
-- Sign up at [Mathpix](https://mathpix.com/)
-- Get your App ID and App Key
+### Gemini API
+- Enable Gemini in your Google Cloud project
+- Obtain an API key from the Google AI Studio
 - Add to `.env`:
   ```
-  MATHPIX_APP_ID=your_app_id
-  MATHPIX_APP_KEY=your_app_key
+  GEMINI_API_KEY=your_gemini_api_key
   ```
 
 ## 📱 How It Works
@@ -83,8 +82,8 @@ An AI-powered application that helps students with last-minute exam preparation 
   - 📱 **Images**: PNG, JPG, JPEG, GIF, BMP, WebP, TIFF
   - 📄 **PDF Documents**: Practice tests, scanned work, digital documents
   - ✍️ **Handwritten Work**: Photos of your handwritten solutions
-- AI extracts text using Mathpix (images) or PyPDF2 (PDFs)
-- GPT-4 analyzes correctness and provides detailed feedback
+- AI extracts text using Gemini (images) or PyPDF2 (PDFs)
+- gpt-oss-20b analyzes correctness and provides detailed feedback
 
 ### 4. Get Study Priorities
 - Dynamic priority queue based on performance
@@ -99,7 +98,7 @@ Frontend (HTML/CSS/JS)
 FastAPI Backend
     ↓
 Services:
-├── MathpixService (Text extraction)
+├── GeminiService (Text transcription)
 ├── GPTService (AI analysis)
 ├── PriorityQueueService (Topic prioritization)
 └── FileProcessor (File handling)
@@ -118,7 +117,7 @@ seikai_hack/
 ├── env.example          # Environment variables template
 ├── README.md            # This file
 ├── services/            # Service layer
-│   ├── mathpix_service.py
+│   ├── gemini_service.py
 │   ├── gpt_service.py
 │   ├── priority_queue.py
 │   └── file_processor.py
@@ -136,9 +135,8 @@ seikai_hack/
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `OPENAI_API_KEY` | OpenAI API key | Required |
-| `MATHPIX_APP_ID` | Mathpix App ID | Required |
-| `MATHPIX_APP_KEY` | Mathpix App Key | Required |
+| `OPENAI_API_KEY` | OpenAI-compatible API key | Required |
+| `GEMINI_API_KEY` | Google Gemini API key | Required |
 | `DATABASE_URL` | Database connection string | `sqlite:///./exam_prep.db` |
 | `HOST` | Server host | `0.0.0.0` |
 | `PORT` | Server port | `8000` |
