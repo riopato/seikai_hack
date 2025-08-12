@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 from models import ExamSession, Topic, Question, User
-from services.mathpix_service import MathpixService
+from services.gemini_service import GeminiService
 from services.gpt_service import GPTService
 from services.priority_queue import PriorityQueueService
 from services.file_processor import FileProcessor
@@ -25,7 +25,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Initialize services
-mathpix_service = MathpixService()
+transcription_service = GeminiService()
 gpt_service = GPTService()
 priority_queue = PriorityQueueService()
 file_processor = FileProcessor()
@@ -114,7 +114,7 @@ async def upload_practice_work(
                 extracted_text = await _process_pdf_file(work_file)
             else:
                 # Handle image files (PNG, JPG, etc.)
-                extracted_text = await mathpix_service.extract_text(work_file)
+                extracted_text = await transcription_service.transcribe_work(work_file)
             
             # Analyze correctness using GPT
             analysis = await gpt_service.analyze_work(extracted_text)

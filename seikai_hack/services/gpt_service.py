@@ -1,16 +1,21 @@
-import openai
 import os
-from typing import Dict, List, Any
 import json
+from typing import Dict, List, Any
+
+from openai import OpenAI
 
 class GPTService:
     def __init__(self):
         self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key not found in environment variables")
-        
-        openai.api_key = self.api_key
-        self.model = "gpt-4"  # Using GPT-4 for better reasoning
+
+        # NVIDIA's open models use the OpenAI-compatible API
+        self.client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=self.api_key,
+        )
+        self.model = "openai/gpt-oss-20b"
     
     async def analyze_work(self, extracted_text: str, course_context: str = "") -> Dict[str, Any]:
         """Analyze student work for correctness and provide feedback"""
@@ -41,18 +46,16 @@ class GPTService:
             }}
             """
             
-            response = openai.ChatCompletion.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are an expert academic tutor. Provide clear, constructive feedback."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.3,
-                max_tokens=1000
+                input=prompt,
+                max_output_tokens=1000,
+                temperature=0.6,
+                top_p=0.7,
             )
-            
+
             # Parse the response
-            content = response.choices[0].message.content
+            content = response.output_text
             try:
                 # Try to extract JSON from the response
                 if "```json" in content:
@@ -98,17 +101,15 @@ class GPTService:
             List the top 3-5 most relevant topics. Respond with just a comma-separated list.
             """
             
-            response = openai.ChatCompletion.create(
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are an expert at identifying academic topics and concepts."},
-                    {"role": "user", "content": prompt}
-                ],
+                input=prompt,
+                max_output_tokens=200,
                 temperature=0.2,
-                max_tokens=200
+                top_p=0.7,
             )
-            
-            topics_text = response.choices[0].message.content.strip()
+
+            topics_text = response.output_text.strip()
             topics = [topic.strip() for topic in topics_text.split(",")]
             return topics
             
