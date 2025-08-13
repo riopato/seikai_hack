@@ -115,10 +115,11 @@ async def upload_practice_work(
             else:
                 # Handle image files (PNG, JPG, etc.)
                 extracted_text = await transcription_service.transcribe_work(work_file)
-            
+
             # Analyze correctness using GPT
             analysis = await gpt_service.analyze_work(extracted_text)
-            
+            # TODO: Extend reasoning or feedback logic here
+
             # Store question and analysis
             question = Question(
                 session_id=session_id,
