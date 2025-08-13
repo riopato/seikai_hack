@@ -20,9 +20,14 @@ import models
 
 app = FastAPI(title="LAST MINUTE Exam Prep AI", version="1.0.0")
 
-# Mount static files and templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# Determine absolute paths for static files and templates
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static",
+)
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 # Initialize services
 transcription_service = GeminiService()
