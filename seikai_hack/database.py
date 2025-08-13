@@ -2,9 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = Path(__file__).resolve().with_name('.env')
+load_dotenv(dotenv_path=env_path)
 
 # Database configuration
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./exam_prep.db")
