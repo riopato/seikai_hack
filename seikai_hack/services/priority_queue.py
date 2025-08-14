@@ -41,17 +41,19 @@ class PriorityQueueService:
         """Update priority for a specific topic"""
         # Find existing topic or create new one
         topic = await self._get_or_create_topic(session_id, topic_name)
-        
-        # Calculate new priority score
-        new_score = self._calculate_priority_score(topic, is_correct, confidence)
-        
-        # Update topic stats
-        topic["priority_score"] = new_score
+
+        # Update topic stats first so scoring uses latest attempt
         topic["questions_attempted"] += 1
         if is_correct:
             topic["questions_correct"] += 1
+
+        # Calculate new priority score using updated stats
+        new_score = self._calculate_priority_score(topic, is_correct, confidence)
+
+        # Apply updates
+        topic["priority_score"] = new_score
         topic["last_practiced"] = datetime.utcnow()
-        
+
         # Store updated topic
         await self._store_topic(session_id, topic)
     
@@ -60,11 +62,7 @@ class PriorityQueueService:
         base_score = topic.get("priority_score", 1.0)
         questions_attempted = topic.get("questions_attempted", 0)
         questions_correct = topic.get("questions_correct", 0)
-        
-        # If this is the first attempt, maintain base priority
-        if questions_attempted == 0:
-            return base_score
-        
+
         # Calculate success rate
         success_rate = questions_correct / questions_attempted if questions_attempted > 0 else 0
         
